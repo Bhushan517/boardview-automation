@@ -1,0 +1,143 @@
+import { expect } from '@playwright/test';
+
+class HrmsConfigPage {
+  constructor(page) {
+    this.page = page;
+  }
+
+  async navigateToHrmsConfiguration() {
+    console.log('Navigating to HRMS Configuration...');
+    const hrmsConfig = this.page.locator('div').filter({ hasText: /^HRMS Configuration$/ }).nth(1);
+    await hrmsConfig.waitFor({ state: 'visible', timeout: 10000 });
+    await hrmsConfig.click();
+    await this.page.waitForTimeout(2000);
+  }
+
+  async clickAddConfiguration() {
+    console.log('Clicking Add Attendance Configuration button...');
+    await this.page.getByTestId('HRMS-ATC-btn-add').click();
+    await this.page.waitForTimeout(1000);
+  }
+
+  async enterConfigName(name) {
+    console.log(`Entering config name: ${name}...`);
+    const input = this.page.getByTestId('HRMS-CAC-input-config-name');
+    await input.click();
+    await input.fill(name);
+    await this.page.waitForTimeout(800);
+  }
+
+  async setWorkingDays(days = '6') {
+    console.log(`Setting working days per week: ${days}...`);
+    const input = this.page.getByRole('row', { name: 'No of working days per week' }).getByTestId('HRMS-CAC-input-numeric');
+    await input.click();
+    await input.fill(days);
+    await this.page.waitForTimeout(800);
+  }
+
+  async selectStartWeekday(weekday = 'Monday') {
+    console.log(`Selecting start weekday: ${weekday}...`);
+    await this.page.getByTestId('HRMS-CAC-dropdown-weekdays').click();
+    await this.page.waitForTimeout(500);
+    await this.page.locator('div').filter({ hasText: new RegExp(`^${weekday}$`) }).first().click();
+    await this.page.waitForTimeout(800);
+  }
+
+  async selectShift(shiftName = 'gene') {
+    console.log(`Searching & selecting shift: ${shiftName}...`);
+    const shiftSearch = this.page.getByTestId('HRMS-CAC-input-shift-search');
+    await shiftSearch.click();
+    await shiftSearch.fill(shiftName);
+    await this.page.waitForTimeout(1000);
+    await this.page.getByTestId('HRMS-CAC-shift-option').first().click();
+    await this.page.waitForTimeout(800);
+  }
+
+  async setLateMarkRules({ maxLateMarks = '0', allowanceMinutes = '0', probationDuration = '0' } = {}) {
+    console.log('Setting late mark rules & probation period...');
+    
+    // Max late marks allowed per month/period
+    const maxLateInput = this.page.getByRole('row', { name: 'Max late marks allowed per' }).getByTestId('HRMS-CAC-input-numeric');
+    await maxLateInput.click();
+    await maxLateInput.fill(maxLateMarks);
+    await this.page.waitForTimeout(600);
+
+    // Late Mark Allowance Minutes
+    const allowanceInput = this.page.getByRole('row', { name: 'Late Mark Allowance Minutes' }).getByTestId('HRMS-CAC-input-numeric');
+    await allowanceInput.click();
+    await allowanceInput.fill(allowanceMinutes);
+    await this.page.waitForTimeout(600);
+
+    // Probation Period Duration
+    const probationInput = this.page.getByRole('row', { name: 'Probation Period Duration' }).getByTestId('HRMS-CAC-input-numeric');
+    await probationInput.click();
+    await probationInput.fill(probationDuration);
+    await this.page.waitForTimeout(600);
+  }
+
+  async handleRejectModalIfPresent() {
+    const rejectBtn = this.page.getByRole('button', { name: 'Reject' });
+    const isVisible = await rejectBtn.isVisible().catch(() => false);
+    if (isVisible) {
+      console.log('Clicking Reject button modal...');
+      await rejectBtn.click();
+      await this.page.waitForTimeout(1000);
+    }
+  }
+
+  async selectDepartment(deptName = 'IT') {
+    console.log(`Selecting department: ${deptName}...`);
+    const deptSearch = this.page.getByTestId('HRMS-CAC-input-dept-search');
+    await deptSearch.click();
+    await this.page.waitForTimeout(800);
+    await this.page.getByTestId('HRMS-CAC-dept-dropdown').getByText(deptName, { exact: true }).click();
+    await this.page.waitForTimeout(800);
+  }
+
+  async selectLocation(locationName = 'Sangamner') {
+    console.log(`Selecting location: ${locationName}...`);
+    const locationSearch = this.page.getByTestId('HRMS-CAC-input-location-search');
+    await locationSearch.click();
+    await this.page.waitForTimeout(800);
+    await this.page.getByText(locationName, { exact: false }).first().click();
+    await this.page.waitForTimeout(800);
+  }
+
+  async clickSaveConfig() {
+    console.log('Saving HRMS Attendance Configuration...');
+    await this.page.getByTestId('HRMS-CAC-btn-save').click();
+    await this.page.waitForTimeout(2500);
+    console.log('✅ HRMS Attendance Configuration saved successfully!');
+  }
+
+  async navigateToAttendance() {
+    console.log('Navigating to Attendance module...');
+    const attendance = this.page.locator('div').filter({ hasText: 'Attendance' }).nth(5);
+    await attendance.waitFor({ state: 'visible', timeout: 10000 });
+    await attendance.click();
+    await this.page.waitForTimeout(2000);
+    console.log('✅ Navigated to Attendance module!');
+  }
+
+  // Combined creation workflow helper
+  async createAttendanceConfiguration(configData) {
+    await this.navigateToHrmsConfiguration();
+    await this.clickAddConfiguration();
+    await this.enterConfigName(configData.name);
+    await this.setWorkingDays(configData.workingDays);
+    await this.selectStartWeekday(configData.weekday);
+    await this.selectShift(configData.shift);
+    await this.setLateMarkRules({
+      maxLateMarks: configData.maxLateMarks,
+      allowanceMinutes: configData.allowanceMinutes,
+      probationDuration: configData.probationDuration
+    });
+    await this.handleRejectModalIfPresent();
+    await this.selectDepartment(configData.department);
+    await this.selectLocation(configData.location);
+    await this.clickSaveConfig();
+    await this.navigateToAttendance();
+  }
+}
+
+export default HrmsConfigPage;
