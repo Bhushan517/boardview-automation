@@ -1,0 +1,24 @@
+{
+  "name": "boardview-automation",
+  "version": "1.0.0",
+  "description": "Playwright Automation Suite for BoardView",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "boardview"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.1"
+  }
+}
