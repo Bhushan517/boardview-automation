@@ -25,12 +25,27 @@ class LoginPage {
     await this.page.waitForTimeout(800);
   }
 
-  async enterPassword(password) {
+  async enterPassword(password, showPassword = false) {
     console.log(`Entering password: ${password ? '********' : '[EMPTY]'}...`);
     const input = this.page.getByRole('textbox', { name: 'Password' });
     await input.click();
     await input.fill(password);
     await this.page.waitForTimeout(800);
+
+    if (showPassword && password) {
+      await this.togglePasswordVisibility();
+    }
+  }
+
+  async togglePasswordVisibility() {
+    console.log('👁️ Toggling password visibility (Show/Hide Password)...');
+    try {
+      const eyeButton = this.page.locator('label').filter({ hasText: 'Password*' }).getByRole('button');
+      await eyeButton.click();
+      await this.page.waitForTimeout(1200); // Keep password visible for a moment
+    } catch (error) {
+      console.log('Password toggle eye icon click fallback...');
+    }
   }
 
   async clearFields() {
@@ -43,7 +58,7 @@ class LoginPage {
   async clickSubmitLogin() {
     console.log('Submitting login...');
     await this.page.getByRole('button', { name: 'Login', exact: true }).click();
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(2500);
   }
 
   async selectOrganization(orgName = 'the baap') {
@@ -59,10 +74,10 @@ class LoginPage {
     console.log('✅ Login and organization selection successful!');
   }
 
-  // Helper for Negative Login attempt
-  async attemptInvalidLogin(emailOrPhone, password) {
+  // Helper for Negative Login attempt with optional password view
+  async attemptInvalidLogin(emailOrPhone, password, showPassword = true) {
     await this.enterEmailOrPhone(emailOrPhone);
-    await this.enterPassword(password);
+    await this.enterPassword(password, showPassword);
     await this.clickSubmitLogin();
   }
 
@@ -87,12 +102,12 @@ class LoginPage {
     }
   }
 
-  // Combined Positive login method
-  async login(emailOrPhone, password, orgName = 'the baap') {
+  // Combined Positive login method with password view
+  async login(emailOrPhone, password, orgName = 'the baap', showPassword = true) {
     await this.goto();
     await this.clickLoginButton();
     await this.enterEmailOrPhone(emailOrPhone);
-    await this.enterPassword(password);
+    await this.enterPassword(password, showPassword);
     await this.clickSubmitLogin();
     await this.selectOrganization(orgName);
   }

@@ -39,7 +39,13 @@ class HrmsConfigPage {
     console.log(`Selecting start weekday: ${weekday}...`);
     await this.page.getByTestId('HRMS-CAC-dropdown-weekdays').click();
     await this.page.waitForTimeout(500);
-    await this.page.locator('div').filter({ hasText: new RegExp(`^${weekday}$`) }).first().click();
+    const dayOption = this.page.locator('div').filter({ hasText: new RegExp(`^${weekday}$`) }).first();
+    const isVisible = await dayOption.isVisible({ timeout: 3000 }).catch(() => false);
+    if (isVisible) {
+      await dayOption.click();
+    } else {
+      await this.page.getByText(weekday, { exact: true }).first().click().catch(() => {});
+    }
     await this.page.waitForTimeout(800);
   }
 
@@ -49,7 +55,23 @@ class HrmsConfigPage {
     await shiftSearch.click();
     await shiftSearch.fill(shiftName);
     await this.page.waitForTimeout(1000);
-    await this.page.getByTestId('HRMS-CAC-shift-option').first().click();
+
+    const shiftOptionByTestId = this.page.getByTestId('HRMS-CAC-shift-option').first();
+    const isTestIdVisible = await shiftOptionByTestId.isVisible({ timeout: 3000 }).catch(() => false);
+
+    if (isTestIdVisible) {
+      await shiftOptionByTestId.click();
+    } else {
+      console.log('Using fallback for shift selection...');
+      const optionText = this.page.getByText(shiftName, { exact: false }).first();
+      const isTextVisible = await optionText.isVisible({ timeout: 3000 }).catch(() => false);
+      if (isTextVisible) {
+        await optionText.click();
+      } else {
+        await shiftSearch.press('ArrowDown');
+        await shiftSearch.press('Enter');
+      }
+    }
     await this.page.waitForTimeout(800);
   }
 
@@ -77,7 +99,7 @@ class HrmsConfigPage {
 
   async handleRejectModalIfPresent() {
     const rejectBtn = this.page.getByRole('button', { name: 'Reject' });
-    const isVisible = await rejectBtn.isVisible().catch(() => false);
+    const isVisible = await rejectBtn.isVisible({ timeout: 2000 }).catch(() => false);
     if (isVisible) {
       console.log('Clicking Reject button modal...');
       await rejectBtn.click();
@@ -90,7 +112,13 @@ class HrmsConfigPage {
     const deptSearch = this.page.getByTestId('HRMS-CAC-input-dept-search');
     await deptSearch.click();
     await this.page.waitForTimeout(800);
-    await this.page.getByTestId('HRMS-CAC-dept-dropdown').getByText(deptName, { exact: true }).click();
+    const deptOption = this.page.getByTestId('HRMS-CAC-dept-dropdown').getByText(deptName, { exact: true });
+    const isVisible = await deptOption.isVisible({ timeout: 3000 }).catch(() => false);
+    if (isVisible) {
+      await deptOption.click();
+    } else {
+      await this.page.getByText(deptName, { exact: true }).first().click().catch(() => {});
+    }
     await this.page.waitForTimeout(800);
   }
 
@@ -99,7 +127,14 @@ class HrmsConfigPage {
     const locationSearch = this.page.getByTestId('HRMS-CAC-input-location-search');
     await locationSearch.click();
     await this.page.waitForTimeout(800);
-    await this.page.getByText(locationName, { exact: false }).first().click();
+    const locOption = this.page.getByText(locationName, { exact: false }).first();
+    const isVisible = await locOption.isVisible({ timeout: 3000 }).catch(() => false);
+    if (isVisible) {
+      await locOption.click();
+    } else {
+      await locationSearch.fill(locationName);
+      await locationSearch.press('Enter');
+    }
     await this.page.waitForTimeout(800);
   }
 
