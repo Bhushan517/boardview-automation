@@ -74,6 +74,35 @@ class AttendancePage {
     await this.page.waitForTimeout(1000);
     console.log('✅ Attendance Log viewed and closed.');
   }
+
+  async approveLeaveRequest() {
+    console.log('Navigating to HRMS Team Requests to approve leave...');
+    await this.page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('hrms').click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('hrms-sub').click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('team-request').click();
+    await this.page.waitForTimeout(1500);
+
+    console.log('Selecting leave requests and approving bulk leave...');
+    await this.page.locator('.w-4').first().click();
+    await this.page.waitForTimeout(800);
+
+    await this.page.getByTestId('HRMS-LR-LRQ-checkbox-header').check();
+    await this.page.waitForTimeout(800);
+
+    await this.page.getByTestId('HRMS-RT-btn-bulk-approve').click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('HRMS-RT-modal-btn-approve').click();
+    await this.page.waitForTimeout(2500);
+    console.log('✅ Leave Request Approved by Admin successfully!');
+  }
 }
 
 export default AttendancePage;

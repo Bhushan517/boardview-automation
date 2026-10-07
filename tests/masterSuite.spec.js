@@ -187,4 +187,42 @@ test.describe.serial('BoardView Professional Complete E2E QA Suite', () => {
 
     console.log('🎉 Phase 3.1 Passed: Employee OTP Login, Clock In & Leave Application Completed!');
   });
+
+  // ===================================================
+  // PHASE 3.2: ADMIN APPROVE LEAVE REQUEST
+  // ===================================================
+  test('3.2 - Admin: Re-Login & Approve Employee Leave Request', async ({ page }) => {
+    console.log('\n--------------------------------------------------');
+    console.log('PHASE 3.2: Admin Re-Login & Approve Employee Leave Request');
+    console.log('--------------------------------------------------');
+
+    await page.goto('https://qa.boardview.me/');
+    await page.getByRole('button', { name: 'Log in' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('8767629834');
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await page.waitForTimeout(2000);
+
+    const searchOrgBox = page.getByRole('textbox', { name: 'Search Organizations' });
+    await searchOrgBox.waitFor({ state: 'visible', timeout: 10000 });
+    await searchOrgBox.click();
+    await searchOrgBox.fill('playwright');
+    await page.waitForTimeout(1200);
+    await page.getByRole('button', { name: 'P Playwright Automation' }).click();
+    await page.waitForTimeout(2500);
+
+    await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await page.getByTestId('hrms').click();
+    await page.getByTestId('hrms-sub').click();
+    await page.getByTestId('team-request').click();
+    await page.waitForTimeout(1500);
+
+    await page.locator('.w-4').first().click();
+    await page.getByTestId('HRMS-LR-LRQ-checkbox-header').check();
+    await page.getByTestId('HRMS-RT-btn-bulk-approve').click();
+    await page.getByTestId('HRMS-RT-modal-btn-approve').click();
+    await page.waitForTimeout(2500);
+
+    console.log('🎉 Phase 3.2 Passed: Admin Re-Login & Leave Request Approved Successfully!');
+  });
 });

@@ -396,6 +396,78 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.locator('div').filter({ hasText: 'People Management' }).nth(5).click();
     await delay(1500);
 
-    console.log('\n🎉 ALL STEPS EXECUTED ACCORDING TO FRESH CODEGEN RECORDING! (Admin Setup -> Fresh Employee Creation -> OTP Login -> Clock In -> Leave Applied)\n');
+    console.log('✅ STEP 5 Complete: Employee Clock In & Apply Leave Completed!\n');
+
+    // ==========================================================
+    // STEP 6: ADMIN RE-LOGIN & APPROVE LEAVE REQUEST
+    // ==========================================================
+    console.log('--- STEP 6: Admin Re-Login & Approve Leave Request ---');
+
+    console.log('6.1 Clearing Employee Session...');
+    await page.context().clearCookies();
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    }).catch(() => {});
+    await delay(1000);
+
+    console.log('6.2 Navigating to Login Page & Logging in as Admin...');
+    await page.goto('https://qa.boardview.me/');
+    await delay(1200);
+
+    const adminLoginBtn = page.getByRole('button', { name: 'Log in' });
+    if (await adminLoginBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await adminLoginBtn.click();
+      await delay(800);
+    }
+
+    await page.getByRole('textbox', { name: 'Email or phone number' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('8767629834');
+    await delay(800);
+
+    await page.getByRole('textbox', { name: 'Password' }).click();
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await delay(800);
+
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await delay(2000);
+
+    console.log('6.3 Searching & Selecting Organization: playwright...');
+    const searchOrgBox = page.getByRole('textbox', { name: 'Search Organizations' });
+    await searchOrgBox.waitFor({ state: 'visible', timeout: 10000 });
+    await searchOrgBox.click();
+    await searchOrgBox.fill('playwright');
+    await delay(1200);
+    await page.getByRole('button', { name: 'P Playwright Automation' }).click();
+    await delay(2500);
+
+    console.log('6.4 Navigating to Applications -> HRMS -> Team Requests...');
+    await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await delay(1200);
+
+    await page.getByTestId('hrms').click();
+    await delay(1200);
+
+    await page.getByTestId('hrms-sub').click();
+    await delay(1200);
+
+    await page.getByTestId('team-request').click();
+    await delay(1500);
+
+    console.log('6.5 Selecting Leave Requests & Approving Bulk Leave...');
+    await page.locator('.w-4').first().click();
+    await delay(800);
+
+    await page.getByTestId('HRMS-LR-LRQ-checkbox-header').check();
+    await delay(800);
+
+    await page.getByTestId('HRMS-RT-btn-bulk-approve').click();
+    await delay(1200);
+
+    await page.getByTestId('HRMS-RT-modal-btn-approve').click();
+    await delay(2500);
+
+    console.log('✅ STEP 6 Complete: Admin Re-Login & Leave Request Approved Successfully!\n');
+    console.log('\n🎉 ALL STEPS EXECUTED SUCCESSFULLY! (Admin Setup -> Fresh Employee Creation -> OTP Login -> Clock In -> Leave Applied -> Admin Re-Login & Leave Approved)\n');
   });
 });
