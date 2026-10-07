@@ -92,10 +92,29 @@ class UserManagementPage {
     await this.page.waitForTimeout(500);
 
     // Manager
-    console.log(`Entering manager: ${empData.manager || empData.firstName}...`);
-    await this.page.getByTestId('UM-AE-Manager').click();
-    await this.page.getByTestId('UM-AE-Manager').fill(empData.manager || empData.firstName);
+    const managerName = empData.manager || 'Bhushan Raut';
+    console.log(`Entering & Selecting manager: ${managerName}...`);
+    const managerInput = this.page.getByTestId('UM-AE-Manager');
+    await managerInput.click();
     await this.page.waitForTimeout(500);
+    await managerInput.fill('Bhushan');
+    await this.page.waitForTimeout(800);
+
+    const managerOption = this.page.locator('div, span, li, p')
+      .filter({ hasText: /^Bhushan Raut$/i })
+      .or(this.page.getByText('Bhushan Raut', { exact: true }))
+      .last();
+
+    if (await managerOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+      console.log('✅ Found Manager option "Bhushan Raut" in dropdown popup, clicking...');
+      await managerOption.click({ force: true });
+    } else {
+      console.log('Manager option not found via locator, using ArrowDown + Enter fallback...');
+      await managerInput.press('ArrowDown').catch(() => {});
+      await this.page.waitForTimeout(300);
+      await managerInput.press('Enter').catch(() => {});
+    }
+    await this.page.waitForTimeout(800);
 
     // Designation
     console.log(`Entering designation: ${empData.designation || 'QA'}...`);

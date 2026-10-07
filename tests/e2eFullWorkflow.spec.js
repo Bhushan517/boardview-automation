@@ -178,8 +178,27 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.getByText('English').nth(1).click();
     await delay(800);
 
-    console.log('3.10 Clicking Manager Field...');
-    await page.getByTestId('UM-AE-Manager').click();
+    console.log('3.10 Entering & Selecting Manager: Bhushan Raut...');
+    const managerInput = page.getByTestId('UM-AE-Manager');
+    await managerInput.click();
+    await delay(500);
+    await managerInput.fill('Bhushan');
+    await delay(800);
+
+    const managerOption = page.locator('div, span, li, p')
+      .filter({ hasText: /^Bhushan Raut$/i })
+      .or(page.getByText('Bhushan Raut', { exact: true }))
+      .last();
+
+    if (await managerOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+      console.log('✅ Found Manager option "Bhushan Raut" in dropdown popup, clicking...');
+      await managerOption.click({ force: true });
+    } else {
+      console.log('Manager option not found via locator, using ArrowDown + Enter fallback...');
+      await managerInput.press('ArrowDown').catch(() => {});
+      await delay(300);
+      await managerInput.press('Enter').catch(() => {});
+    }
     await delay(800);
 
     console.log('3.11 Entering Designation: QA...');
