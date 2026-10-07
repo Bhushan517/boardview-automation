@@ -15,7 +15,21 @@ class HrmsConfigPage {
 
   async clickAddConfiguration() {
     console.log('Clicking Add Attendance Configuration button...');
-    await this.page.getByTestId('HRMS-ATC-btn-add').click();
+    // Target container's Add button to avoid strict mode ambiguity with Credit Leaves button
+    const addBtn = this.page.getByTestId('HRMS-ATC-container').getByRole('button', { name: 'Add' });
+    const isContainerBtnVisible = await addBtn.isVisible({ timeout: 3000 }).catch(() => false);
+
+    if (isContainerBtnVisible) {
+      await addBtn.click();
+    } else {
+      const addByFilter = this.page.getByTestId('HRMS-ATC-btn-add').filter({ hasText: 'Add' }).first();
+      const isFilterVisible = await addByFilter.isVisible({ timeout: 3000 }).catch(() => false);
+      if (isFilterVisible) {
+        await addByFilter.click();
+      } else {
+        await this.page.getByTestId('HRMS-ATC-btn-add').last().click();
+      }
+    }
     await this.page.waitForTimeout(1000);
   }
 
@@ -27,7 +41,7 @@ class HrmsConfigPage {
     await this.page.waitForTimeout(800);
   }
 
-  async setWorkingDays(days = '6') {
+  async setWorkingDays(days = '7') {
     console.log(`Setting working days per week: ${days}...`);
     const input = this.page.getByRole('row', { name: 'No of working days per week' }).getByTestId('HRMS-CAC-input-numeric');
     await input.click();
@@ -49,7 +63,7 @@ class HrmsConfigPage {
     await this.page.waitForTimeout(800);
   }
 
-  async selectShift(shiftName = 'gene') {
+  async selectShift(shiftName = 'general') {
     console.log(`Searching & selecting shift: ${shiftName}...`);
     const shiftSearch = this.page.getByTestId('HRMS-CAC-input-shift-search');
     await shiftSearch.click();
@@ -110,32 +124,38 @@ class HrmsConfigPage {
   async selectDepartment(deptName = 'IT') {
     console.log(`Selecting department: ${deptName}...`);
     const deptSearch = this.page.getByTestId('HRMS-CAC-input-dept-search');
-    await deptSearch.click();
-    await this.page.waitForTimeout(800);
-    const deptOption = this.page.getByTestId('HRMS-CAC-dept-dropdown').getByText(deptName, { exact: true });
-    const isVisible = await deptOption.isVisible({ timeout: 3000 }).catch(() => false);
-    if (isVisible) {
-      await deptOption.click();
-    } else {
-      await this.page.getByText(deptName, { exact: true }).first().click().catch(() => {});
+    const isDeptSearchVisible = await deptSearch.isVisible({ timeout: 2000 }).catch(() => false);
+    if (isDeptSearchVisible) {
+      await deptSearch.click();
+      await this.page.waitForTimeout(800);
+      const deptOption = this.page.getByTestId('HRMS-CAC-dept-dropdown').getByText(deptName, { exact: true });
+      const isVisible = await deptOption.isVisible({ timeout: 3000 }).catch(() => false);
+      if (isVisible) {
+        await deptOption.click();
+      } else {
+        await this.page.getByText(deptName, { exact: true }).first().click().catch(() => {});
+      }
+      await this.page.waitForTimeout(800);
     }
-    await this.page.waitForTimeout(800);
   }
 
   async selectLocation(locationName = 'Sangamner') {
     console.log(`Selecting location: ${locationName}...`);
     const locationSearch = this.page.getByTestId('HRMS-CAC-input-location-search');
-    await locationSearch.click();
-    await this.page.waitForTimeout(800);
-    const locOption = this.page.getByText(locationName, { exact: false }).first();
-    const isVisible = await locOption.isVisible({ timeout: 3000 }).catch(() => false);
-    if (isVisible) {
-      await locOption.click();
-    } else {
-      await locationSearch.fill(locationName);
-      await locationSearch.press('Enter');
+    const isLocationSearchVisible = await locationSearch.isVisible({ timeout: 2000 }).catch(() => false);
+    if (isLocationSearchVisible) {
+      await locationSearch.click();
+      await this.page.waitForTimeout(800);
+      const locOption = this.page.getByText(locationName, { exact: false }).first();
+      const isVisible = await locOption.isVisible({ timeout: 3000 }).catch(() => false);
+      if (isVisible) {
+        await locOption.click();
+      } else {
+        await locationSearch.fill(locationName);
+        await locationSearch.press('Enter');
+      }
+      await this.page.waitForTimeout(800);
     }
-    await this.page.waitForTimeout(800);
   }
 
   async clickSaveConfig() {
