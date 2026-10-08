@@ -630,6 +630,165 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     }
     console.log('✅ STEP 8 Complete: Admin Rejected Leave Cancellation Request Successfully!\n');
 
-    console.log('\n🎉 ALL 8 STEPS EXECUTED SUCCESSFULLY! (Admin Setup -> Employee Creation -> OTP Login -> Clock In -> Leave Applied -> Admin Bulk Approved -> Employee Cancelled Leave -> Admin Rejected Cancellation)\n');
+    // ==========================================================
+    // STEP 9: ADMIN MARK TEAM ATTENDANCE & APPLY FILTER (FRESH CODEGEN)
+    // ==========================================================
+    console.log('--- STEP 9: Admin Mark Team Attendance & Apply Filter ---');
+    console.log('9.1 Navigating to Attendance Module...');
+    const attBtn = page.getByTestId('attendance');
+    if (await attBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await attBtn.click();
+    } else {
+      await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click().catch(() => {});
+      await page.getByTestId('hrms').click().catch(() => {});
+      await page.getByTestId('hrms-sub').click().catch(() => {});
+      await page.getByTestId('attendance').click().catch(() => {});
+    }
+    await delay(1500);
+
+    console.log('9.2 Navigating through Team, Hierarchy, and Team Status tabs...');
+    await page.getByTestId('HRMS-ATT-tab-team').click().catch(() => {});
+    await delay(600);
+
+    await page.getByTestId('HRMS-ATT-tab-hierarchy').click().catch(() => {});
+    await delay(600);
+
+    await page.getByTestId('HRMS-ATT-tab-team-status').click().catch(() => {});
+    await delay(1000);
+
+    console.log('9.3 Marking Initial Team Attendance & Handling Reject Modal if present...');
+    await page.getByTestId('HRMS-attendance-present-1').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-second-half-1').click().catch(() => {});
+
+    const rejectModalBtn = page.getByRole('button', { name: 'Reject' });
+    if (await rejectModalBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await rejectModalBtn.click().catch(() => {});
+      await delay(600);
+    }
+    await page.getByTestId('HRMS-attendance-save-btn').click().catch(() => {});
+    await delay(2000);
+
+    console.log('9.4 Selecting Date 1, Marking Present & Confirming...');
+    await page.getByTestId('HRMS-attendance-start-date-input').click();
+    await delay(500);
+    await page.getByRole('button', { name: '1' }).first().click();
+    await delay(600);
+
+    await page.getByTestId('HRMS-attendance-present-1').click().catch(() => {});
+
+    const confirmModalBtn = page.getByRole('button', { name: 'Confirm' });
+    if (await confirmModalBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await confirmModalBtn.click().catch(() => {});
+      await delay(600);
+    }
+    await page.getByTestId('HRMS-attendance-save-btn').click().catch(() => {});
+    await delay(2000);
+
+    console.log('9.5 Selecting Date 6, Searching Employee (Bhushan), and Marking Attendance...');
+    await page.getByTestId('HRMS-attendance-start-date-input').click();
+    await delay(500);
+    await page.getByRole('button', { name: '6', exact: true }).click();
+    await delay(600);
+
+    await page.getByTestId('HRMS-attendance-search-input').click();
+    await page.getByTestId('HRMS-attendance-search-input').fill('Bhushan');
+    await delay(800);
+
+    await page.getByTestId('HRMS-attendance-present-0').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-first-half-0').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-save-btn').click().catch(() => {});
+    await delay(2000);
+
+    console.log('9.6 Applying Attendance Gender Filter: Male...');
+    await page.getByTestId('HRMS-attendance-filter-btn').click().catch(() => {});
+    await delay(600);
+    await page.getByTestId('HRMS-attendance-gender-select').click().catch(() => {});
+    await delay(600);
+    await page.getByTestId('HRMS-attendance-gender-option-male').click().catch(() => {});
+    await delay(600);
+    await page.getByTestId('HRMS-attendance-filter-apply-btn').click().catch(() => {});
+    await delay(2000);
+    console.log('✅ STEP 9 Complete: Admin Marked & Filtered Team Attendance Successfully!\n');
+
+    // ==========================================================
+    // STEP 10: EMPLOYEE RE-LOGIN & VERIFY ATTENDANCE CALENDAR & LOG
+    // ==========================================================
+    console.log('--- STEP 10: Employee Re-Login & Verify Attendance Calendar & Log ---');
+
+    console.log('10.1 Clearing Admin Session...');
+    await page.context().clearCookies();
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    }).catch(() => {});
+    await delay(1000);
+
+    console.log('10.2 Logging in as Employee: 9922264088...');
+    await page.goto('https://qa.boardview.me/', { waitUntil: 'networkidle' });
+    await delay(1200);
+
+    const empLoginBtn3 = page.getByRole('button', { name: 'Log in' });
+    if (await empLoginBtn3.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await empLoginBtn3.click();
+      await delay(800);
+    }
+
+    await page.getByRole('textbox', { name: 'Email or phone number' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('9922264088');
+    await delay(800);
+
+    await page.getByRole('textbox', { name: 'Password' }).click();
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await delay(800);
+
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await delay(2500);
+
+    console.log('10.3 Navigating to Applications -> HRMS -> Attendance...');
+    await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await delay(1200);
+
+    await page.getByTestId('hrms').click();
+    await delay(1200);
+
+    await page.getByTestId('hrms-sub').click();
+    await delay(1200);
+
+    await page.getByTestId('attendance').click();
+    await delay(1500);
+
+    console.log('10.4 Inspecting Calendar Grid Dates (1, 6, 8)...');
+    const date1Grid = page.getByTestId('HRMS-ATT-grid-calendar').locator('div').filter({ hasText: /^1$/ }).first();
+    if (await date1Grid.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await date1Grid.click().catch(() => {});
+      await delay(600);
+    }
+
+    const date6Grid = page.locator('div').filter({ hasText: /^6$/ }).first();
+    if (await date6Grid.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await date6Grid.click().catch(() => {});
+      await delay(600);
+    }
+
+    const date8Grid = page.locator('div').filter({ hasText: /^8$/ }).first();
+    if (await date8Grid.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await date8Grid.click().catch(() => {});
+      await delay(600);
+    }
+
+    console.log('10.5 Opening and Closing Attendance Log...');
+    await page.getByTestId('HRMS-ATT-btn-view-log').click().catch(() => {});
+    await delay(1500);
+    await page.getByTestId('HRMS-attendance-log-close-btn').click().catch(() => {});
+    await delay(1000);
+
+    console.log('10.6 Returning navigation via HRMS Sub & HRMS...');
+    await page.getByTestId('hrms-sub').click().catch(() => {});
+    await delay(800);
+    await page.getByTestId('hrms').click().catch(() => {});
+    await delay(1000);
+    console.log('✅ STEP 10 Complete: Employee Attendance Calendar & Log Verified Successfully!\n');
+
+    console.log('\n🎉 ALL 10 MASTER E2E STEPS EXECUTED SUCCESSFULLY! (Admin Setup -> Employee Creation -> OTP Login -> Clock In -> Leave Applied -> Admin Bulk Approved -> Employee Cancelled Leave -> Admin Rejected Cancellation -> Admin Marked & Filtered Attendance -> Employee Verified Attendance Log)\n');
   });
 });

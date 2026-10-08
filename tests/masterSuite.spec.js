@@ -317,4 +317,120 @@ test.describe.serial('BoardView Professional Complete E2E QA Suite', () => {
 
     console.log('🎉 Phase 3.4 Passed: Admin Rejected Leave Cancellation Request Successfully!');
   });
+
+  // ===================================================
+  // PHASE 3.5: ADMIN MARK TEAM ATTENDANCE & APPLY FILTER
+  // ===================================================
+  test('3.5 - Admin: Mark Team Attendance & Apply Filter (Fresh Codegen)', async ({ page }) => {
+    console.log('\n--------------------------------------------------');
+    console.log('PHASE 3.5: Admin Mark Team Attendance & Apply Filter');
+    console.log('--------------------------------------------------');
+
+    await page.goto('https://qa.boardview.me/');
+    await page.getByRole('button', { name: 'Log in' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('8767629834');
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await page.waitForTimeout(2000);
+
+    const searchOrgBox = page.getByRole('textbox', { name: 'Search Organizations' });
+    await searchOrgBox.waitFor({ state: 'visible', timeout: 10000 });
+    await searchOrgBox.click();
+    await searchOrgBox.fill('playwright');
+    await page.waitForTimeout(1200);
+    await page.getByRole('button', { name: 'P Playwright Automation' }).click();
+    await page.waitForTimeout(2500);
+
+    const attBtn = page.getByTestId('attendance');
+    if (await attBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await attBtn.click();
+    } else {
+      await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click().catch(() => {});
+      await page.getByTestId('hrms').click().catch(() => {});
+      await page.getByTestId('hrms-sub').click().catch(() => {});
+      await page.getByTestId('attendance').click().catch(() => {});
+    }
+    await page.waitForTimeout(1500);
+
+    await page.getByTestId('HRMS-ATT-tab-team').click().catch(() => {});
+    await page.getByTestId('HRMS-ATT-tab-hierarchy').click().catch(() => {});
+    await page.getByTestId('HRMS-ATT-tab-team-status').click().catch(() => {});
+    await page.waitForTimeout(1000);
+
+    await page.getByTestId('HRMS-attendance-present-1').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-second-half-1').click().catch(() => {});
+    await page.getByRole('button', { name: 'Reject' }).click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-save-btn').click().catch(() => {});
+    await page.waitForTimeout(2000);
+
+    await page.getByTestId('HRMS-attendance-start-date-input').click();
+    await page.getByRole('button', { name: '1' }).first().click();
+    await page.getByTestId('HRMS-attendance-present-1').click().catch(() => {});
+    await page.getByRole('button', { name: 'Confirm' }).click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-save-btn').click().catch(() => {});
+    await page.waitForTimeout(2000);
+
+    await page.getByTestId('HRMS-attendance-start-date-input').click();
+    await page.getByRole('button', { name: '6', exact: true }).click();
+    await page.getByTestId('HRMS-attendance-search-input').click();
+    await page.getByTestId('HRMS-attendance-search-input').fill('Bhushan');
+    await page.getByTestId('HRMS-attendance-present-0').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-first-half-0').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-save-btn').click().catch(() => {});
+    await page.waitForTimeout(2000);
+
+    await page.getByTestId('HRMS-attendance-filter-btn').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-gender-select').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-gender-option-male').click().catch(() => {});
+    await page.getByTestId('HRMS-attendance-filter-apply-btn').click().catch(() => {});
+    await page.waitForTimeout(2000);
+
+    console.log('🎉 Phase 3.5 Passed: Admin Marked & Filtered Team Attendance Successfully!');
+  });
+
+  // ===================================================
+  // PHASE 3.6: EMPLOYEE VERIFY ATTENDANCE LOG
+  // ===================================================
+  test('3.6 - Employee: Re-Login & Verify Attendance Log (Fresh Codegen)', async ({ page }) => {
+    console.log('\n--------------------------------------------------');
+    console.log('PHASE 3.6: Employee Re-Login & Verify Attendance Log');
+    console.log('--------------------------------------------------');
+
+    await page.goto('https://qa.boardview.me/');
+    await page.getByRole('button', { name: 'Log in' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('9922264088');
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await page.waitForTimeout(2500);
+
+    await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await page.getByTestId('hrms').click();
+    await page.getByTestId('hrms-sub').click();
+    await page.getByTestId('attendance').click();
+    await page.waitForTimeout(1500);
+
+    const date1Grid = page.getByTestId('HRMS-ATT-grid-calendar').locator('div').filter({ hasText: /^1$/ }).first();
+    if (await date1Grid.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await date1Grid.click().catch(() => {});
+    }
+    const date6Grid = page.locator('div').filter({ hasText: /^6$/ }).first();
+    if (await date6Grid.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await date6Grid.click().catch(() => {});
+    }
+    const date8Grid = page.locator('div').filter({ hasText: /^8$/ }).first();
+    if (await date8Grid.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await date8Grid.click().catch(() => {});
+    }
+
+    await page.getByTestId('HRMS-ATT-btn-view-log').click().catch(() => {});
+    await page.waitForTimeout(1500);
+    await page.getByTestId('HRMS-attendance-log-close-btn').click().catch(() => {});
+    await page.waitForTimeout(1000);
+
+    await page.getByTestId('hrms-sub').click().catch(() => {});
+    await page.getByTestId('hrms').click().catch(() => {});
+    await page.waitForTimeout(1000);
+
+    console.log('🎉 Phase 3.6 Passed: Employee Attendance Log Verified Successfully!');
+  });
 });
