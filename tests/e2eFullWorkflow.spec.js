@@ -468,6 +468,168 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await delay(2500);
 
     console.log('✅ STEP 6 Complete: Admin Re-Login & Leave Request Approved Successfully!\n');
-    console.log('\n🎉 ALL STEPS EXECUTED SUCCESSFULLY! (Admin Setup -> Fresh Employee Creation -> OTP Login -> Clock In -> Leave Applied -> Admin Re-Login & Leave Approved)\n');
+
+    // ==========================================================
+    // STEP 7: EMPLOYEE RE-LOGIN & CANCEL LEAVE APPLICATION
+    // ==========================================================
+    console.log('--- STEP 7: Employee Re-Login & Cancel Leave Application ---');
+
+    console.log('7.1 Clearing Admin Session...');
+    await page.context().clearCookies();
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    }).catch(() => {});
+    await delay(1000);
+
+    console.log('7.2 Logging in as Employee: 9922264088...');
+    await page.goto('https://qa.boardview.me/', { waitUntil: 'networkidle' });
+    await delay(1200);
+
+    const empLoginBtn = page.getByRole('button', { name: 'Log in' });
+    if (await empLoginBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await empLoginBtn.click();
+      await delay(800);
+    }
+
+    await page.getByRole('textbox', { name: 'Email or phone number' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('9922264088');
+    await delay(800);
+
+    await page.getByRole('textbox', { name: 'Password' }).click();
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await delay(800);
+
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await delay(2500);
+
+    console.log('7.3 Navigating to Leave Management & Requesting Leave Cancellation...');
+    await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await delay(1200);
+
+    await page.getByTestId('hrms').click();
+    await delay(1200);
+
+    await page.getByTestId('hrms-sub').click();
+    await delay(1200);
+
+    await page.getByTestId('leave-management').click();
+    await delay(1500);
+
+    console.log('7.4 Clicking Cancel Request button...');
+    await page.getByTestId('HRMS-LR-ML-btn-cancel-request').click();
+    await delay(1000);
+
+    console.log('7.5 Filling Cancellation Reason: Requesting cancellation of approved leave due to change in personal schedule...');
+    await page.getByTestId('HRMS-CQ-textarea-reason').click();
+    await page.getByTestId('HRMS-CQ-textarea-reason').fill('Requesting cancellation of approved leave due to change in personal schedule.');
+    await delay(800);
+
+    const cancelRejectBtn = page.getByRole('button', { name: 'Reject' });
+    if (await cancelRejectBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await cancelRejectBtn.click();
+      await delay(600);
+    }
+
+    await page.getByTestId('HRMS-CQ-container').getByTestId('AF-student-save-button').click();
+    await delay(2500);
+    console.log('✅ STEP 7 Complete: Employee Leave Cancellation Submitted Successfully!\n');
+
+    // ==========================================================
+    // STEP 8: ADMIN RE-LOGIN & REJECT LEAVE CANCELLATION
+    // ==========================================================
+    console.log('--- STEP 8: Admin Re-Login & Reject Leave Cancellation ---');
+
+    console.log('8.1 Clearing Employee Session...');
+    await page.context().clearCookies();
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    }).catch(() => {});
+    await delay(1000);
+
+    console.log('8.2 Logging in as Admin: 8767629834...');
+    await page.goto('https://qa.boardview.me/', { waitUntil: 'networkidle' });
+    await delay(1200);
+
+    const adminReloginBtn = page.getByRole('button', { name: 'Log in' });
+    if (await adminReloginBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await adminReloginBtn.click();
+      await delay(800);
+    }
+
+    await page.getByRole('textbox', { name: 'Email or phone number' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('8767629834');
+    await delay(800);
+
+    await page.getByRole('textbox', { name: 'Password' }).click();
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await delay(800);
+
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await delay(2000);
+
+    console.log('8.3 Searching & Selecting Organization: playwright...');
+    const searchOrgBox2 = page.getByRole('textbox', { name: 'Search Organizations' });
+    await searchOrgBox2.waitFor({ state: 'visible', timeout: 10000 });
+    await searchOrgBox2.click();
+    await searchOrgBox2.fill('playwright');
+    await delay(1200);
+
+    await page.getByRole('button', { name: 'P Playwright Automation' }).click();
+    await delay(2500);
+
+    console.log('8.4 Navigating to Applications -> HRMS -> Team Requests...');
+    await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await delay(1200);
+
+    await page.getByTestId('hrms').click();
+    await delay(1200);
+
+    await page.getByTestId('hrms-sub').click();
+    await delay(1200);
+
+    await page.getByTestId('team-request').click();
+    await delay(1500);
+
+    console.log('8.5 Opening Employee Request for Bhushan Raut...');
+    const empCell = page.getByRole('cell', { name: 'Bhushan Raut' });
+    if (await empCell.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await empCell.click();
+    } else {
+      await page.getByTestId('HRMS-LR-LRQ-container').getByText('Bhushan Raut').click().catch(() => {});
+    }
+    await delay(1200);
+
+    console.log('8.6 Expanding workflow level header & clicking Reject button...');
+    await page.getByTestId('am_ar_ard_w_level_header_0').click().catch(() => {});
+    await delay(600);
+
+    await page.getByTestId('AM-AR-ARD-W-reject-button-0-0').click().catch(() => {});
+    await delay(800);
+
+    console.log('8.7 Entering Rejection Reason & Submitting Rejection...');
+    await page.getByTestId('am_ar_ard_w_rejection_reason_textarea').click();
+    await page.getByTestId('am_ar_ard_w_rejection_reason_textarea').fill('Leave was already approved and scheduled in the roster. Unable to process cancellation request at this time.');
+    await delay(800);
+
+    await page.getByTestId('am_ar_ard_w_rejection_submit_button').click();
+    await delay(2000);
+
+    console.log('8.8 Closing panel & checking status dropdown...');
+    const backBtn = page.locator('.flex.items-center.mb-3 > button').first();
+    if (await backBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await backBtn.click();
+      await delay(1000);
+    }
+
+    const statusDropdown = page.getByTestId('HRMS-RT-dropdown-status');
+    if (await statusDropdown.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await statusDropdown.click();
+      await delay(1000);
+    }
+    console.log('✅ STEP 8 Complete: Admin Rejected Leave Cancellation Request Successfully!\n');
+
+    console.log('\n🎉 ALL 8 STEPS EXECUTED SUCCESSFULLY! (Admin Setup -> Employee Creation -> OTP Login -> Clock In -> Leave Applied -> Admin Bulk Approved -> Employee Cancelled Leave -> Admin Rejected Cancellation)\n');
   });
 });

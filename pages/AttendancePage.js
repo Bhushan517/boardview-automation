@@ -103,6 +103,99 @@ class AttendancePage {
     await this.page.waitForTimeout(2500);
     console.log('✅ Leave Request Approved by Admin successfully!');
   }
+
+  async cancelLeaveRequest(reason = 'Requesting cancellation of approved leave due to change in personal schedule.') {
+    console.log('Navigating to Leave Management to cancel leave...');
+    await this.page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('hrms').click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('hrms-sub').click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('leave-management').click();
+    await this.page.waitForTimeout(1500);
+
+    console.log('Clicking Cancel Request button...');
+    await this.page.getByTestId('HRMS-LR-ML-btn-cancel-request').click();
+    await this.page.waitForTimeout(1000);
+
+    console.log(`Entering cancellation reason: "${reason}"...`);
+    const reasonTextarea = this.page.getByTestId('HRMS-CQ-textarea-reason');
+    await reasonTextarea.click();
+    await reasonTextarea.fill(reason);
+    await this.page.waitForTimeout(500);
+
+    const rejectBtn = this.page.getByRole('button', { name: 'Reject' });
+    const isRejectVisible = await rejectBtn.isVisible({ timeout: 2000 }).catch(() => false);
+    if (isRejectVisible) {
+      await rejectBtn.click();
+      await this.page.waitForTimeout(500);
+    }
+
+    await this.page.getByTestId('HRMS-CQ-container').getByTestId('AF-student-save-button').click();
+    await this.page.waitForTimeout(2500);
+    console.log('✅ Leave Cancellation Request submitted by Employee successfully!');
+  }
+
+  async rejectLeaveCancellation(rejectionReason = 'Leave was already approved and scheduled in the roster. Unable to process cancellation request at this time.') {
+    console.log('Navigating to HRMS Team Requests to reject cancellation...');
+    await this.page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('hrms').click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('hrms-sub').click();
+    await this.page.waitForTimeout(1200);
+
+    await this.page.getByTestId('team-request').click();
+    await this.page.waitForTimeout(1500);
+
+    console.log('Selecting Employee Leave Request...');
+    const empCell = this.page.getByRole('cell', { name: 'Bhushan Raut' });
+    const isCellVisible = await empCell.isVisible({ timeout: 3000 }).catch(() => false);
+    if (isCellVisible) {
+      await empCell.click();
+    } else {
+      await this.page.getByTestId('HRMS-LR-LRQ-container').getByText('Bhushan Raut').click().catch(() => {});
+    }
+    await this.page.waitForTimeout(1000);
+
+    console.log('Expanding workflow header & clicking Reject button...');
+    await this.page.getByTestId('am_ar_ard_w_level_header_0').click().catch(() => {});
+    await this.page.waitForTimeout(500);
+
+    await this.page.getByTestId('AM-AR-ARD-W-reject-button-0-0').click().catch(() => {});
+    await this.page.waitForTimeout(800);
+
+    console.log(`Entering rejection reason: "${rejectionReason}"...`);
+    const reasonInput = this.page.getByTestId('am_ar_ard_w_rejection_reason_textarea');
+    await reasonInput.click();
+    await reasonInput.fill(rejectionReason);
+    await this.page.waitForTimeout(800);
+
+    console.log('Submitting rejection...');
+    await this.page.getByTestId('am_ar_ard_w_rejection_submit_button').click();
+    await this.page.waitForTimeout(2000);
+
+    const backBtn = this.page.locator('.flex.items-center.mb-3 > button').first();
+    const isBackVisible = await backBtn.isVisible({ timeout: 2000 }).catch(() => false);
+    if (isBackVisible) {
+      await backBtn.click();
+      await this.page.waitForTimeout(1000);
+    }
+
+    const statusDropdown = this.page.getByTestId('HRMS-RT-dropdown-status');
+    const isStatusVisible = await statusDropdown.isVisible({ timeout: 2000 }).catch(() => false);
+    if (isStatusVisible) {
+      await statusDropdown.click();
+      await this.page.waitForTimeout(1000);
+    }
+    console.log('✅ Leave Cancellation Rejected by Admin successfully!');
+  }
 }
 
 export default AttendancePage;

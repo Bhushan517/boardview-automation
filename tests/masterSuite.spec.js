@@ -225,4 +225,96 @@ test.describe.serial('BoardView Professional Complete E2E QA Suite', () => {
 
     console.log('🎉 Phase 3.2 Passed: Admin Re-Login & Leave Request Approved Successfully!');
   });
+
+  // ===================================================
+  // PHASE 3.3: EMPLOYEE CANCEL LEAVE APPLICATION
+  // ===================================================
+  test('3.3 - Employee: Re-Login & Request Leave Cancellation', async ({ page }) => {
+    console.log('\n--------------------------------------------------');
+    console.log('PHASE 3.3: Employee Re-Login & Request Leave Cancellation');
+    console.log('--------------------------------------------------');
+
+    await page.goto('https://qa.boardview.me/');
+    await page.getByRole('button', { name: 'Log in' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('9922264088');
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await page.waitForTimeout(2500);
+
+    await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await page.getByTestId('hrms').click();
+    await page.getByTestId('hrms-sub').click();
+    await page.getByTestId('leave-management').click();
+    await page.waitForTimeout(1500);
+
+    await page.getByTestId('HRMS-LR-ML-btn-cancel-request').click();
+    await page.waitForTimeout(1000);
+
+    await page.getByTestId('HRMS-CQ-textarea-reason').fill('Requesting cancellation of approved leave due to change in personal schedule.');
+    await page.getByRole('button', { name: 'Reject' }).click().catch(() => {});
+    await page.getByTestId('HRMS-CQ-container').getByTestId('AF-student-save-button').click();
+    await page.waitForTimeout(2500);
+
+    console.log('🎉 Phase 3.3 Passed: Employee Leave Cancellation Submitted Successfully!');
+  });
+
+  // ===================================================
+  // PHASE 3.4: ADMIN REJECT LEAVE CANCELLATION
+  // ===================================================
+  test('3.4 - Admin: Re-Login & Reject Leave Cancellation Request', async ({ page }) => {
+    console.log('\n--------------------------------------------------');
+    console.log('PHASE 3.4: Admin Re-Login & Reject Leave Cancellation Request');
+    console.log('--------------------------------------------------');
+
+    await page.goto('https://qa.boardview.me/');
+    await page.getByRole('button', { name: 'Log in' }).click();
+    await page.getByRole('textbox', { name: 'Email or phone number' }).fill('8767629834');
+    await page.getByRole('textbox', { name: 'Password' }).fill('Bhushan@123');
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
+    await page.waitForTimeout(2000);
+
+    const searchOrgBox = page.getByRole('textbox', { name: 'Search Organizations' });
+    await searchOrgBox.waitFor({ state: 'visible', timeout: 10000 });
+    await searchOrgBox.click();
+    await searchOrgBox.fill('playwright');
+    await page.waitForTimeout(1200);
+    await page.getByRole('button', { name: 'P Playwright Automation' }).click();
+    await page.waitForTimeout(2500);
+
+    await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
+    await page.getByTestId('hrms').click();
+    await page.getByTestId('hrms-sub').click();
+    await page.getByTestId('team-request').click();
+    await page.waitForTimeout(1500);
+
+    const empCell = page.getByRole('cell', { name: 'Bhushan Raut' });
+    if (await empCell.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await empCell.click();
+    } else {
+      await page.getByTestId('HRMS-LR-LRQ-container').getByText('Bhushan Raut').click().catch(() => {});
+    }
+    await page.waitForTimeout(1000);
+
+    await page.getByTestId('am_ar_ard_w_level_header_0').click().catch(() => {});
+    await page.getByTestId('AM-AR-ARD-W-reject-button-0-0').click().catch(() => {});
+    await page.waitForTimeout(800);
+
+    await page.getByTestId('am_ar_ard_w_rejection_reason_textarea').fill('Leave was already approved and scheduled in the roster. Unable to process cancellation request at this time.');
+    await page.getByTestId('am_ar_ard_w_rejection_submit_button').click();
+    await page.waitForTimeout(2000);
+
+    const backBtn = page.locator('.flex.items-center.mb-3 > button').first();
+    if (await backBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await backBtn.click();
+      await page.waitForTimeout(1000);
+    }
+
+    const statusDropdown = page.getByTestId('HRMS-RT-dropdown-status');
+    if (await statusDropdown.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await statusDropdown.click();
+      await page.waitForTimeout(1000);
+    }
+
+    console.log('🎉 Phase 3.4 Passed: Admin Rejected Leave Cancellation Request Successfully!');
+  });
 });
