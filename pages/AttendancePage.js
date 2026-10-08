@@ -31,7 +31,7 @@ class AttendancePage {
     await this.page.waitForTimeout(2000);
   }
 
-  async applyLeave(leaveReason = 'i am not well todya') {
+  async applyLeave(leaveReason = 'Requesting leave due to personal health reasons and medical consultation.') {
     console.log('Clicking Apply Leave button...');
     await this.navigateToLeaveManagement();
     await this.page.getByTestId('HRMS-LM-btn-apply-leave').click();

@@ -95,7 +95,7 @@ test.describe.serial('BoardView Professional Complete E2E QA Suite', () => {
     }
 
     await page.getByTestId('HRMS-ATC-container').getByRole('button', { name: 'Add' }).click();
-    await page.getByTestId('HRMS-CAC-input-config-name').fill('new one');
+    await page.getByTestId('HRMS-CAC-input-config-name').fill('Standard Attendance Policy');
     await page.getByTestId('HRMS-CAC-input-config-name').press('Enter');
     await page.getByTestId('HRMS-CAC-input-shift-search').fill('general');
     await page.getByTestId('HRMS-CAC-shift-option').first().click().catch(() => {});
@@ -112,12 +112,12 @@ test.describe.serial('BoardView Professional Complete E2E QA Suite', () => {
     await userMgmtPage.navigateToUsersAndStaff();
     await userMgmtPage.createEmployee({
       title: 'Mr',
-      firstName: 'bhushan',
-      lastName: 'raut',
+      firstName: 'Bhushan',
+      lastName: 'Raut',
       phone: '9922264088',
       gender: 'Male',
-      manager: 'bhushan',
-      designation: 'QA',
+      manager: 'Bhushan Raut',
+      designation: 'Senior QA Automation Engineer',
       role: 'Emp',
       shift: 'general',
       joiningDate: '1',
@@ -176,7 +176,7 @@ test.describe.serial('BoardView Professional Complete E2E QA Suite', () => {
     await page.getByTestId('HRMS-LM-btn-apply-leave').click();
     await page.getByTestId('HRMS-L-start-date-picker').click();
     await page.getByRole('button', { name: '1', exact: true }).first().click().catch(() => {});
-    await page.getByTestId('HRMS-L-reason-textarea').fill('i am not well todya');
+    await page.getByTestId('HRMS-L-reason-textarea').fill('Requesting leave due to personal health reasons and medical consultation.');
     await page.getByRole('button', { name: 'Reject' }).click().catch(() => {});
     await page.getByTestId('AF-student-save-button').click().catch(() => {});
     await page.waitForTimeout(2000);

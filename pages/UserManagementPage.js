@@ -117,9 +117,9 @@ class UserManagementPage {
     await this.page.waitForTimeout(800);
 
     // Designation
-    console.log(`Entering designation: ${empData.designation || 'QA'}...`);
+    console.log(`Entering designation: ${empData.designation || 'Senior QA Automation Engineer'}...`);
     await this.page.getByTestId('UM-AE-Designation').click();
-    await this.page.getByTestId('UM-AE-Designation').fill(empData.designation || 'QA');
+    await this.page.getByTestId('UM-AE-Designation').fill(empData.designation || 'Senior QA Automation Engineer');
     await this.page.waitForTimeout(500);
 
     // Role

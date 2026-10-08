@@ -75,12 +75,12 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
       await delay(1500);
     }
 
-    console.log('2.3 Adding New Attendance Configuration: "new one"...');
+    console.log('2.3 Adding New Attendance Configuration: "Standard Attendance Policy"...');
     await page.getByTestId('HRMS-ATC-container').getByRole('button', { name: 'Add' }).click();
     await delay(1000);
 
     await page.getByTestId('HRMS-CAC-input-config-name').click();
-    await page.getByTestId('HRMS-CAC-input-config-name').fill('new one');
+    await page.getByTestId('HRMS-CAC-input-config-name').fill('Standard Attendance Policy');
     await page.getByTestId('HRMS-CAC-input-config-name').press('Enter');
     await delay(800);
 
@@ -147,14 +147,14 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.locator('#add-employee-sidebar').getByText('Mr', { exact: true }).click();
     await delay(800);
 
-    console.log('3.4 Entering First Name: bhushan...');
+    console.log('3.4 Entering First Name: Bhushan...');
     await page.getByTestId('UM-AE-First Name').click();
-    await page.getByTestId('UM-AE-First Name').fill('bhushan');
+    await page.getByTestId('UM-AE-First Name').fill('Bhushan');
     await delay(800);
 
-    console.log('3.5 Entering Last Name: raut...');
+    console.log('3.5 Entering Last Name: Raut...');
     await page.getByTestId('UM-AE-Last Name').click();
-    await page.getByTestId('UM-AE-Last Name').fill('raut');
+    await page.getByTestId('UM-AE-Last Name').fill('Raut');
     await delay(800);
 
     console.log('3.6 Entering Phone Number: 9922264088...');
@@ -201,9 +201,9 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     }
     await delay(800);
 
-    console.log('3.11 Entering Designation: QA...');
+    console.log('3.11 Entering Designation: Senior QA Automation Engineer...');
     await page.getByTestId('UM-AE-Designation').click();
-    await page.getByTestId('UM-AE-Designation').fill('QA');
+    await page.getByTestId('UM-AE-Designation').fill('Senior QA Automation Engineer');
     await delay(800);
 
     console.log('3.12 Entering Role: Emp...');
@@ -367,7 +367,7 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await delay(800);
 
     await page.getByTestId('HRMS-L-reason-textarea').click();
-    await page.getByTestId('HRMS-L-reason-textarea').fill('i am not well todya');
+    await page.getByTestId('HRMS-L-reason-textarea').fill('Requesting leave due to personal health reasons and medical consultation.');
     await delay(800);
 
     const leaveRejectBtn = page.getByRole('button', { name: 'Reject' });
