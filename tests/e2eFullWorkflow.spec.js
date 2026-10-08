@@ -147,14 +147,14 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.locator('#add-employee-sidebar').getByText('Mr', { exact: true }).click();
     await delay(800);
 
-    console.log('3.4 Entering First Name: Bhushan...');
+    console.log('3.4 Entering First Name: Babaraje...');
     await page.getByTestId('UM-AE-First Name').click();
-    await page.getByTestId('UM-AE-First Name').fill('Bhushan');
+    await page.getByTestId('UM-AE-First Name').fill('Babaraje');
     await delay(800);
 
-    console.log('3.5 Entering Last Name: Raut...');
+    console.log('3.5 Entering Last Name: Khemnar...');
     await page.getByTestId('UM-AE-Last Name').click();
-    await page.getByTestId('UM-AE-Last Name').fill('Raut');
+    await page.getByTestId('UM-AE-Last Name').fill('Khemnar');
     await delay(800);
 
     console.log('3.6 Entering Phone Number: 9922264088...');
@@ -592,12 +592,12 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.getByTestId('team-request').click();
     await delay(1500);
 
-    console.log('8.5 Opening Employee Request for Bhushan Raut...');
-    const empCell = page.getByRole('cell', { name: 'Bhushan Raut' });
+    console.log('8.5 Opening Employee Request for Babaraje Khemnar...');
+    const empCell = page.getByRole('cell', { name: 'Babaraje Khemnar' });
     if (await empCell.isVisible({ timeout: 3000 }).catch(() => false)) {
       await empCell.click();
     } else {
-      await page.getByTestId('HRMS-LR-LRQ-container').getByText('Bhushan Raut').click().catch(() => {});
+      await page.getByTestId('HRMS-LR-LRQ-container').getByText('Babaraje Khemnar').click().catch(() => {});
     }
     await delay(1200);
 
