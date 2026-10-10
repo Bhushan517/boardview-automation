@@ -1,18 +1,24 @@
 import { test, expect } from '@playwright/test';
 
 test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequence)', () => {
+  let page;
 
-  test('Complete Single E2E Flow: Admin Setup -> Employee Creation -> Employee OTP Login -> Clock In -> Apply Leave', async ({ page }) => {
-    test.setTimeout(480000); // 8 mins timeout for clear execution
-    console.log('\n🚀 Starting Complete BoardView E2E Flow (Fresh Codegen Sequence)...\n');
+  test.beforeAll(async ({ browser }) => {
+    page = await browser.newPage();
+  });
 
-    // Helper delay for uniform, visible execution (800ms)
-    const delay = async (ms = 800) => await page.waitForTimeout(ms);
+  test.afterAll(async () => {
+    await page.close().catch(() => {});
+  });
 
-    // ==========================================================
-    // STEP 1: ADMIN LOGIN & ORGANIZATION SELECTION
-    // ==========================================================
-    console.log('--- STEP 1: Admin Login & Select Organization ---');
+  const delay = async (ms = 800) => await page.waitForTimeout(ms);
+
+  // ==========================================================
+  // STEP 01: ADMIN LOGIN & ORGANIZATION SELECTION
+  // ==========================================================
+  test('STEP 01: Admin Login & Select Organization', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 01: Admin Login & Select Organization ---');
     await page.goto('https://qa.boardview.me/', { waitUntil: 'networkidle' });
     await delay(1200);
 
@@ -47,12 +53,15 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await delay(1200);
     await page.getByRole('button', { name: 'P Playwright Automation' }).click();
     await delay(3000);
-    console.log('✅ Admin Login & Organization Selection Complete!\n');
+    console.log('✅ STEP 01 Passed: Admin Login & Organization Selection Complete!\n');
+  });
 
-    // ==========================================================
-    // STEP 2: HRMS CONFIGURATION
-    // ==========================================================
-    console.log('--- STEP 2: HRMS Configuration ---');
+  // ==========================================================
+  // STEP 02: HRMS ATTENDANCE CONFIGURATION
+  // ==========================================================
+  test('STEP 02: Setup HRMS Attendance Configuration', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 02: Setup HRMS Attendance Configuration ---');
     console.log('2.1 Navigating: Applications -> People Management -> HRMS -> HRMS Configuration...');
     await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
     await delay(1200);
@@ -124,12 +133,15 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     console.log('2.8 Saving HRMS Attendance Configuration...');
     await page.getByTestId('HRMS-CAC-btn-save').click();
     await delay(2500);
-    console.log('✅ HRMS Configuration Saved Successfully!\n');
+    console.log('✅ STEP 02 Passed: HRMS Configuration Saved Successfully!\n');
+  });
 
-    // ==========================================================
-    // STEP 3: USER MANAGEMENT & ADD EMPLOYEE (EXACT FRESH CODEGEN SEQUENCE)
-    // ==========================================================
-    console.log('--- STEP 3: User Management & Add Employee ---');
+  // ==========================================================
+  // STEP 03: USER MANAGEMENT & ADD EMPLOYEE
+  // ==========================================================
+  test('STEP 03: User Management & Add Employee (Bhushan Raut)', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 03: User Management & Add Employee ---');
     console.log('3.1 Navigating: User Management -> Users & Staff...');
     await page.locator('div').filter({ hasText: 'User Management' }).nth(5).click();
     await delay(1200);
@@ -147,14 +159,14 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.locator('#add-employee-sidebar').getByText('Mr', { exact: true }).click();
     await delay(800);
 
-    console.log('3.4 Entering First Name: Babaraje...');
+    console.log('3.4 Entering First Name: Bhushan...');
     await page.getByTestId('UM-AE-First Name').click();
-    await page.getByTestId('UM-AE-First Name').fill('Babaraje');
+    await page.getByTestId('UM-AE-First Name').fill('Bhushan');
     await delay(800);
 
-    console.log('3.5 Entering Last Name: Khemnar...');
+    console.log('3.5 Entering Last Name: Raut...');
     await page.getByTestId('UM-AE-Last Name').click();
-    await page.getByTestId('UM-AE-Last Name').fill('Khemnar');
+    await page.getByTestId('UM-AE-Last Name').fill('Raut');
     await delay(800);
 
     console.log('3.6 Entering Phone Number: 9922264088...');
@@ -240,15 +252,15 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     console.log('3.17 Saving Employee...');
     await page.locator('#add-employee-sidebar').getByRole('button', { name: 'Save' }).click();
     await delay(2500);
+    console.log('✅ STEP 03 Passed: Employee Bhushan Raut Created & Saved Successfully!\n');
+  });
 
-    console.log('✅ STEP 3 Complete: Employee bhushan raut Created & Saved Successfully!\n');
-
-    // ==========================================================
-    // STEP 4: EMPLOYEE OTP LOGIN & SET PASSWORD
-    // ==========================================================
-    console.log('--- STEP 4: Employee OTP Login & Set Password ---');
-
-    // Clear Admin session to start fresh unauthenticated Employee login page
+  // ==========================================================
+  // STEP 04: EMPLOYEE OTP LOGIN & SET PASSWORD
+  // ==========================================================
+  test('STEP 04: Employee OTP Login & Password Setup', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 04: Employee OTP Login & Set Password ---');
     await page.context().clearCookies();
     await page.evaluate(() => {
       localStorage.clear();
@@ -326,12 +338,15 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
       await page.getByRole('button', { name: 'Login', exact: true }).click();
       await delay(2500);
     }
-    console.log('✅ Employee OTP Login & Password Setup Complete!\n');
+    console.log('✅ STEP 04 Passed: Employee OTP Login & Password Setup Complete!\n');
+  });
 
-    // ==========================================================
-    // STEP 5: EMPLOYEE CLOCK IN & APPLY LEAVE
-    // ==========================================================
-    console.log('--- STEP 5: Employee Clock In & Apply Leave ---');
+  // ==========================================================
+  // STEP 05: EMPLOYEE CLOCK IN & APPLY LEAVE
+  // ==========================================================
+  test('STEP 05: Employee Clock In & Apply Leave Application', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 05: Employee Clock In & Apply Leave ---');
     console.log('5.1 Navigating to Applications -> People Management -> HRMS -> Attendance...');
     await page.locator('div').filter({ hasText: 'Applications' }).nth(4).click();
     await delay(1200);
@@ -396,14 +411,15 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.locator('div').filter({ hasText: 'People Management' }).nth(5).click();
     await delay(1500);
 
-    console.log('✅ STEP 5 Complete: Employee Clock In & Apply Leave Completed!\n');
+    console.log('✅ STEP 05 Passed: Employee Clock In & Apply Leave Completed!\n');
+  });
 
-    // ==========================================================
-    // STEP 6: ADMIN RE-LOGIN & APPROVE LEAVE REQUEST
-    // ==========================================================
-    console.log('--- STEP 6: Admin Re-Login & Approve Leave Request ---');
-
-    console.log('6.1 Clearing Employee Session...');
+  // ==========================================================
+  // STEP 06: ADMIN RE-LOGIN & APPROVE LEAVE REQUEST
+  // ==========================================================
+  test('STEP 06: Admin Re-Login & Bulk Approve Leave Request', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 06: Admin Re-Login & Approve Leave Request ---');
     await page.context().clearCookies();
     await page.evaluate(() => {
       localStorage.clear();
@@ -467,14 +483,15 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.getByTestId('HRMS-RT-modal-btn-approve').click();
     await delay(2500);
 
-    console.log('✅ STEP 6 Complete: Admin Re-Login & Leave Request Approved Successfully!\n');
+    console.log('✅ STEP 06 Passed: Admin Re-Login & Leave Request Approved Successfully!\n');
+  });
 
-    // ==========================================================
-    // STEP 7: EMPLOYEE RE-LOGIN & CANCEL LEAVE APPLICATION
-    // ==========================================================
-    console.log('--- STEP 7: Employee Re-Login & Cancel Leave Application ---');
-
-    console.log('7.1 Clearing Admin Session...');
+  // ==========================================================
+  // STEP 07: EMPLOYEE RE-LOGIN & CANCEL LEAVE APPLICATION
+  // ==========================================================
+  test('STEP 07: Employee Re-Login & Request Leave Cancellation', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 07: Employee Re-Login & Cancel Leave Application ---');
     await page.context().clearCookies();
     await page.evaluate(() => {
       localStorage.clear();
@@ -533,14 +550,15 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
 
     await page.getByTestId('HRMS-CQ-container').getByTestId('AF-student-save-button').click();
     await delay(2500);
-    console.log('✅ STEP 7 Complete: Employee Leave Cancellation Submitted Successfully!\n');
+    console.log('✅ STEP 07 Passed: Employee Leave Cancellation Submitted Successfully!\n');
+  });
 
-    // ==========================================================
-    // STEP 8: ADMIN RE-LOGIN & REJECT LEAVE CANCELLATION
-    // ==========================================================
-    console.log('--- STEP 8: Admin Re-Login & Reject Leave Cancellation ---');
-
-    console.log('8.1 Clearing Employee Session...');
+  // ==========================================================
+  // STEP 08: ADMIN RE-LOGIN & REJECT LEAVE CANCELLATION
+  // ==========================================================
+  test('STEP 08: Admin Re-Login & Reject Leave Cancellation Request', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 08: Admin Re-Login & Reject Leave Cancellation ---');
     await page.context().clearCookies();
     await page.evaluate(() => {
       localStorage.clear();
@@ -592,12 +610,12 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await page.getByTestId('team-request').click();
     await delay(1500);
 
-    console.log('8.5 Opening Employee Request for Babaraje Khemnar...');
-    const empCell = page.getByRole('cell', { name: 'Babaraje Khemnar' });
+    console.log('8.5 Opening Employee Request for Bhushan Raut...');
+    const empCell = page.getByRole('cell', { name: 'Bhushan Raut' });
     if (await empCell.isVisible({ timeout: 3000 }).catch(() => false)) {
       await empCell.click();
     } else {
-      await page.getByTestId('HRMS-LR-LRQ-container').getByText('Babaraje Khemnar').click().catch(() => {});
+      await page.getByTestId('HRMS-LR-LRQ-container').getByText('Bhushan Raut').click().catch(() => {});
     }
     await delay(1200);
 
@@ -628,12 +646,15 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
       await statusDropdown.click();
       await delay(1000);
     }
-    console.log('✅ STEP 8 Complete: Admin Rejected Leave Cancellation Request Successfully!\n');
+    console.log('✅ STEP 08 Passed: Admin Rejected Leave Cancellation Request Successfully!\n');
+  });
 
-    // ==========================================================
-    // STEP 9: ADMIN MARK TEAM ATTENDANCE & APPLY FILTER (FRESH CODEGEN)
-    // ==========================================================
-    console.log('--- STEP 9: Admin Mark Team Attendance & Apply Filter ---');
+  // ==========================================================
+  // STEP 09: ADMIN MARK TEAM ATTENDANCE & APPLY FILTER (FRESH CODEGEN)
+  // ==========================================================
+  test('STEP 09: Admin Mark Team Attendance & Apply Filter', async () => {
+    test.setTimeout(120000);
+    console.log('--- STEP 09: Admin Mark Team Attendance & Apply Filter ---');
     console.log('9.1 Navigating to Attendance Module...');
     const attBtn = page.getByTestId('attendance');
     if (await attBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -708,11 +729,14 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await delay(600);
     await page.getByTestId('HRMS-attendance-filter-apply-btn').click().catch(() => {});
     await delay(2000);
-    console.log('✅ STEP 9 Complete: Admin Marked & Filtered Team Attendance Successfully!\n');
+    console.log('✅ STEP 09 Passed: Admin Marked & Filtered Team Attendance Successfully!\n');
+  });
 
-    // ==========================================================
-    // STEP 10: EMPLOYEE RE-LOGIN & VERIFY ATTENDANCE CALENDAR & LOG
-    // ==========================================================
+  // ==========================================================
+  // STEP 10: EMPLOYEE RE-LOGIN & VERIFY ATTENDANCE CALENDAR & LOG
+  // ==========================================================
+  test('STEP 10: Employee Re-Login & Verify Attendance Calendar & Log', async () => {
+    test.setTimeout(120000);
     console.log('--- STEP 10: Employee Re-Login & Verify Attendance Calendar & Log ---');
 
     console.log('10.1 Clearing Admin Session...');
@@ -787,8 +811,8 @@ test.describe.serial('BoardView End-to-End Workflow (Fresh Employee Codegen Sequ
     await delay(800);
     await page.getByTestId('hrms').click().catch(() => {});
     await delay(1000);
-    console.log('✅ STEP 10 Complete: Employee Attendance Calendar & Log Verified Successfully!\n');
+    console.log('✅ STEP 10 Passed: Employee Attendance Calendar & Log Verified Successfully!\n');
 
-    console.log('\n🎉 ALL 10 MASTER E2E STEPS EXECUTED SUCCESSFULLY! (Admin Setup -> Employee Creation -> OTP Login -> Clock In -> Leave Applied -> Admin Bulk Approved -> Employee Cancelled Leave -> Admin Rejected Cancellation -> Admin Marked & Filtered Attendance -> Employee Verified Attendance Log)\n');
+    console.log('\n🎉 ALL 10 MASTER E2E STEPS EXECUTED SUCCESSFULLY!\n');
   });
 });
